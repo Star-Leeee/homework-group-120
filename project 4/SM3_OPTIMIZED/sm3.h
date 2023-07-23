@@ -63,11 +63,10 @@ const int W[68] = { 0x61626380 ,0x00000000,0x00000000,0x00000000 ,0x00000000,0x0
 0x68378cf5 ,0x97585344 ,0x09008723,0x86faee74,0x2ab908b0 ,0x4a64bc50,0x864e6e08 ,0xf07e6590,
 0x325c8f78 ,0xaccb8011,0xe11db9dd,0xb99c0545 };
 
-uint_32 rotate_left_32(uint_32 arg, int num);
-uint_32 FF(uint_32 X, uint_32 Y, uint_32 Z, int j);
-uint_32 GG(uint_32 X, uint_32 Y, uint_32 Z, int j);
-uint_32 P0(uint_32 arg);
-uint_32 P1(uint_32 arg);
+//uint_32 FF(uint_32 X, uint_32 Y, uint_32 Z, int j);
+//uint_32 GG(uint_32 X, uint_32 Y, uint_32 Z, int j);
+//uint_32 P0(uint_32 arg);
+//uint_32 P1(uint_32 arg);
 void CF(uint_256 V, uint_512 B);
 void sm3_do(uint_8* input, uint_256 output, long long size);
 uint_32 endian_swap(uint_32 arg);
