@@ -1,8 +1,10 @@
 #pragma once
-#pragma once
-
-
-
+#include<stdlib.h>
+#include<stdio.h>
+#include<iostream>
+#include<chrono>
+#include<intrin.h>
+#include<string.h>
 #define uint_32 unsigned int// 4byte 1word
 #define uint_8 unsigned char// 8bit 1byte
 #define uint_256 unsigned int*

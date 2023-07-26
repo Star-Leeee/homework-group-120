@@ -1,7 +1,4 @@
 #include"sm3.h"
-#include<intrin.h>
-#include<stdlib.h>
-#include<stdio.h>
 
 #define GG(x,y,z,j)	((j<=15)?((x)^(y)^(z)):((x & y) | ((~x) & (z))))
 #define FF(x,y,z,j)	((j<=15)?((x)^(y)^(z)):((x & y) | (x & z) | (y & z)))
@@ -61,6 +58,8 @@ uint_32 endian_swap(uint_32 arg)
 		| ((arg & 0x0000ff00) << 8)
 		| ((arg & 0x000000ff) << 24);
 }
+
+
 
 void CF(uint_256 V, uint_512 B)
 {
@@ -209,14 +208,11 @@ void sm3_do(uint_8* input, uint_256 output, long long size)
 		temp[i] = input[i];
 	}
 	temp[size >> 3] = 0x80;
-	temp[((size + k + 1 + 64) >> 3) - 1] = size;
-
-	//iteration
-	//for (int i = 0; i < 8; i++)
-	//{
-	//	output[i] = IV[i];
-	//}
-
+	for (long long i = 0; i < 8; i++)
+	{
+		temp[((size + k + 65) >> 3) - i - 1] = ((uint_8*)(&size))[i];
+	}
+	
 	output[0] = IV[0];
 	output[1] = IV[1];
 	output[2] = IV[2];
