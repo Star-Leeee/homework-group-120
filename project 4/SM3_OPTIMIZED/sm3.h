@@ -10,8 +10,6 @@
 #define uint_256 unsigned int*
 #define uint_512 unsigned int*
 
-
-
 const uint_32 IV[8] =
 {
 	0x7380166f, 0x4914b2b9, 0x172442d7, 0xda8a0600, 0xa96f30bc, 0x163138aa, 0xe38dee4d, 0xb0fb0e4e
@@ -65,10 +63,7 @@ const int W[68] = { 0x61626380 ,0x00000000,0x00000000,0x00000000 ,0x00000000,0x0
 0x68378cf5 ,0x97585344 ,0x09008723,0x86faee74,0x2ab908b0 ,0x4a64bc50,0x864e6e08 ,0xf07e6590,
 0x325c8f78 ,0xaccb8011,0xe11db9dd,0xb99c0545 };
 
-//uint_32 FF(uint_32 X, uint_32 Y, uint_32 Z, int j);
-//uint_32 GG(uint_32 X, uint_32 Y, uint_32 Z, int j);
-//uint_32 P0(uint_32 arg);
-//uint_32 P1(uint_32 arg);
+
 void CF(uint_256 V, uint_512 B);
 void sm3_do(uint_8* input, uint_256 output, long long size);
 uint_32 endian_swap(uint_32 arg);
