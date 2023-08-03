@@ -1,89 +1,95 @@
-
-# -*- coding: utf-8 -*-
-"""
-Created on Fri Jun 20 16:06:34 2022
-
-@author: lenovo
-"""
-
-import hashlib
+import math
+import hashlib,json
 import random
+import time
+import string
+
+#定义Merkel Tree的生成函数
+def Tree_Generate(Data):
+
+    MerkleTree = [[]]#首先我们像实现思路那里那样定义一个二维列表用来Merkel tree的存取
+
+    l0 = len(Data)
+    Depth = math.ceil(math.log(l0, 2))+1#初始化其深度
+    #根据RFC6962，采用SHA256进行标准的hash运算
+    MerkleTree[0] = [(hashlib.sha256(i.encode())).hexdigest() for i in Data]
+    #计算树的深度和叶子节点的个数，接着计算数据哈希值并写入叶子节点
+    #每两个子节点计算相加后的哈希值并写入父节点列表。
+    for i in range(1, Depth):
+        l = math.floor(len(MerkleTree[i-1])/2)#根据下一层节点个数，计算出此层节点个数
+        MerkleTree.append([(hashlib.sha256(MerkleTree[i-1][2*j].encode() + MerkleTree[i-1][2*j+1].encode())).hexdigest() for j in range(0, l)])
+        if len(MerkleTree[i-1])%2 == 1:
+            MerkleTree[i].append(MerkleTree[i-1][-1])
+
+    return MerkleTree
 
 
-#叶节点
-class Node:
-    def __init__(self, value):
-        self.left = None
-        self.right = None
-        self.parent = None
-        self.value = value
-        self.hash = hashlib.sha256(('0x00'+value).encode('utf-8')).hexdigest()
-#MerkleTree:
-class MerkleTree:
-    def __init__(self,value):
-        self.leaves = value
-        self.root = None
-    #创建merkle树
-    def buildTree(self): 
-        allnodes = []
-        for i in self.leaves:
-            allnodes.append(i)
-        while len(allnodes) != 1:
-            temp = []
-            for i in range(0, len(allnodes), 2):
-                leftnode = allnodes[i]
-                if i+1 < len(allnodes):
-                    rightnode = allnodes[i+1]
-                else:
-                    temp.append(allnodes[i])
-                    break
+#可以直接调用random函数，同时我们也可以调用crawler
+def gent_data():
+    return [''.join(random.sample('abcdefghijklmnopqrstuvwxyz0123456789',5)) for i in range(0,100000)]
 
-                parentValue = leftnode.hash + rightnode.hash
-                parent = Node(parentValue)
-                parent.hash = hashlib.sha256(('0x01'+parentValue).encode('utf-8')).hexdigest()
-                leftnode.parent = parent
-                rightnode.parent = parent
-                parent.left = leftnode
-                parent.right = rightnode
-                temp.append(parent)
-            allnodes = temp
-        self.root = allnodes[0]
-    #获取根节点的哈希值
-    def getRoot(self)-> str:
-         return self.root.hash
-     
-    #为指定元素建立包含证明
-    def check_inclusion(self, value, Hash):
-        arr = Hash.split()
-        hash_node = hashlib.sha256(('0x00'+value).encode('utf-8')).hexdigest()
-        if arr[1][0] == '0':
-            tmp = hashlib.sha256((arr[1][1:] + hash_node).encode('utf-8')).hexdigest()
-        elif arr[1][0] == '1':
-            tmp = hashlib.sha256((hash_node + arr[1][1:]).encode('utf-8')).hexdigest()
-        for i in range(2, len(arr)):
-            hash_node = tmp
-            if arr[i][0] == '0':
-                tmp = hashlib.sha256((arr[i][1:] + hash_node).encode('utf-8')).hexdigest()
-            elif arr[i][0] == '1':
-                tmp = hashlib.sha256((hash_node + arr[i][1:]).encode('utf-8')).hexdigest()
-        if tmp == arr[0]:
-            return True
+#对于该Merkel Tree进行给定节点的存在性证明时
+def Evidence(m,Tree):
+    h = (hashlib.sha256(m.encode())).hexdigest()
+    try:
+        n=Tree[0].index(h)
+    except:
+        print("The leafnode is not in the tree")
+
+    Depth = len(Tree)
+    Evidence = []
+    for d in range(0,Depth):
+        if n%2==0:
+            if n == len(Tree[d]) - 1:
+                pass
+            else:
+                Evidence.append([Tree[d][n],Tree[d][n+1]])
         else:
+            Evidence.append([Tree[d][n-1], Tree[d][n]])
+
+        n = math.floor(n/2)
+
+    Evidence.append([Tree[-1][0]])
+
+    return Evidence
+
+#4.验证证明的正确性！
+def Verify(m,Evidence,Top):
+    h = (hashlib.sha256(m.encode())).hexdigest()
+    if h != Evidence[0][0] and h != Evidence[0][1]:
+        return False
+
+    if Evidence[-1][0] != Top:
+        return False
+
+    Depth = len(Evidence)
+    for i in range(0,Depth-1):
+        node = (hashlib.sha256(Evidence[i][0].encode() + Evidence[i][1].encode())).hexdigest()
+        if node != Evidence[i+1][0] and node != Evidence[i+1][1]:
             return False
 
-#构建具有10w叶节点的Merkle树
-ls = []
-for i in range(100000):
-    ls.append(Node(''.join(random.sample('0123456789abcdefghijklmnopqrstuvwxyz',5))))
-merkleTree=MerkleTree(ls)
-merkleTree.buildTree()
-print("Root: ",merkleTree.getRoot())
-#检查是否包含
-value = 'ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff'
-Hash= "9ca619dd4a13d02391aeb48fa9dd0a56f6fcf7ed0bc7311c45e64c052eca7133 1ba915e042e9aafcd4348b060345025ef2eb8f93d4fc7fe1719b9a7e1c1034be 451f7cb426ffa960fdad0301d4f4ccf4107751dfbe878cc5a71824f72b4d67bc"
-print("#检查是否包含")
-print("value=",value)
-print("结果为",merkleTree.check_inclusion(value, Hash))
+    if (hashlib.sha256(Evidence[-2][0].encode() + Evidence[-2][1].encode())).hexdigest() != Evidence[-1][0]:
+        return False
 
+    return True
 
-          
+if __name__ == '__main__':
+    #下面我们开始对Merkel Tree进行测试
+
+    #1.生成一个有10w个叶子节点的Merkel Tree
+    TestMessages = gent_data()
+    MerkleTree = Tree_Generate(TestMessages)
+    print("生成一个有10w个叶子节点的Merkel Tree：")
+
+    #2.证明对指定元素包含于Merkel Tree
+    n=random.randint(0,100000-1)#随机指定一个元素
+    myEvidence = Evidence(TestMessages[n],MerkleTree)
+    print("指定元素n包含于Merkel Tree的证据：")
+    print(myEvidence)
+
+    #4.验证证明的正确性！
+    print("验证证明正确性的依据：：")
+
+    print(Verify(TestMessages[n],myEvidence,MerkleTree[-1][0]))
+
+    #完成project中的实现要求，测试完成。
