@@ -84,7 +84,7 @@ if __name__ == '__main__':
     #2.证明对指定元素包含于Merkel Tree
     n=random.randint(0,100000-1)#随机指定一个元素
     myEvidence = Evidence(TestMessages[n],MerkleTree)
-    print("指定元素n包含于Merkel Tree的证据：")
+    print("指定元素",TestMessages[n],"包含于Merkel Tree的证据：")
     print(myEvidence)
 
     #4.验证证明的正确性！
