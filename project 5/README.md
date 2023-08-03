@@ -1,78 +1,61 @@
 # Project5：Impl Merkle Tree following RFC6962  
-**主要做的工作**：根据RFC6962对于Merkle Tree的设计，实现了Merkle Tree的构建，利用Merkle Audit Paths实现Inclusion proof for specified element和Inclusion proof for specified element;实现Merkle Consistency Proofs；测试程序在进行Inclusion Proof时的效率。   
-***
-## 实验说明
-### 构建方式：
-不同于普遍的Merkle Tree设计从叶子结点开始两两组合生成Merkle Root，RFC6962要求构建从Root开始递归构建二叉树  
-<img width="449" alt="image" src="https://github.com/Dianyudengdeng/homework-group-113/assets/93588357/450525be-db20-43b5-af64-21e92c02819a">  
-例如添加五个结点：  
-<img width="295" alt="image" src="https://github.com/Dianyudengdeng/homework-group-113/assets/93588357/8641d4d4-c5c5-419d-9dfd-5ff1b99fbc16">
-<img width="723" alt="image" src="https://github.com/Dianyudengdeng/homework-group-113/assets/93588357/13ba8d8a-2fc0-4a86-b45a-ddb7e7ee8763">  
-从计算hash值的过程中可以看出构建的树结构是相同的。  
-### 数据存储：
-在生成树的过程中，使用散列表MTH以存储内部结点的Hash值，注意这里为了演示存储了叶子结点的Hash值，实际运行中并不会存储。因为在进行Inclusion/Exclusion proof证明时，只会用到已经获取的叶子结点的Hash值，所以并不会产生影响。  
-### 具体实现：
-根据RFC6962，调整索引设计得到的的Audit Path与Subproof： 
-#### Audit Path: 
-```c++
-string tree::Audit_Path(int index, int start, int end) {//递归构建审计路径
-	if (start == end - 1) {
-		string concatenated = to_string(start) + "-" + to_string(end);
-		cout << "审计路径包含的内容:" << concatenated << endl;
-		return MTH[concatenated];
-	}
-	else {
-		int k = 1;
-		while (k < end - start) {
-			k <<= 1; 
-		}
-		k >>= 1;
-		if (index < k) {
-			string concatenated =to_string(start + k) + "-" + to_string(end-start);
-			cout << "审计路径包含的内容:" << concatenated << endl;
-			return sha256("0x01" + Audit_Path(index, start, start+k)+ MTH[concatenated]);
-		}
-		else {
-			string concatenated = to_string(start) + "-" + to_string(start+k);
-			cout << "审计路径包含的内容:" << concatenated << endl;
-			return sha256("0x01"+MTH[concatenated]+ Audit_Path(index, start + k, end));
-		}
-	}
-}
-```
-#### Subproof:
-```c++
-string tree::SUBPROOF(int index,int start,int end,bool TF) {
-	int n = end - start;
-	if (index == n) {
-		if (TF)
-			return this->merkleRoot->getHash();//根哈希已知
-		else {
-			string concatenated = to_string(0) + "-" + to_string(index);
-			return MTH[concatenated];
-		}
-	}
-	else {
-		int k = 1;
-		while (k < n) {
-			k <<= 1;
-		}
-		k >>= 1;
-		if (index <= k) {
-			string concatenated = to_string(index) + "-" + to_string(n);
-			return sha256("0x01" + SUBPROOF(index, 0, k, TF) + MTH[concatenated]);
-		}
-		else {
-			string concatenated = to_string(0) + "-" + to_string(k);
-			return sha256("0x01" + SUBPROOF(index-k, k, n, TF) + MTH[concatenated]);
-		}
-	}
 
-}
+## 实现方式：
+根据RFC6962对于Merkle Tree的设计，实现了Merkle Tree的构建，利用***Evidence***和***Verify***实现Inclusion proof and Exclusion proof for specified element
+
+不同于普遍的Merkle Tree设计从叶子结点开始两两组合生成Merkle Root，RFC6962要求构建从Root开始递归构建二叉树  
+<img width="449" alt="RFC" src="https://github.com/Star-Leeee/homework-group-120/assets/139939885/dda1d0ca-d48e-41aa-846e-eb88e8c49b32">
+
+初始化一个二维列表用于存放我们的Merkel tree，计算树的深度和叶子节点的个数，接着计算数据哈希值并写入叶子节点；每两个子节点计算相加后的哈希值并写入父节点列表。 而对于同一层的节点可以重复调用这个function（过程），生成下一层（父节点层）Merkle树的节点；每层向上生成父节点的时候，需要讨论对于节点数为奇数的层的最后一个节点，直接写入下一层（父节点层）；节点数为偶数则正好配对完全，进行递归步骤(3)和(4)的过程，循环步骤(1)计算的树的深度，完成Merkle树的生成过程；
+
+## 具体实现：
+
+```python
+def Evidence(m,Tree):
+    h = (hashlib.sha256(m.encode())).hexdigest()
+    try:
+        n=Tree[0].index(h)
+    except:
+        print("The leafnode is not in the tree")
+
+    Depth = len(Tree)
+    Evidence = []
+    for d in range(0,Depth):
+        if n%2==0:
+            if n == len(Tree[d]) - 1:
+                pass
+            else:
+                Evidence.append([Tree[d][n],Tree[d][n+1]])
+        else:
+            Evidence.append([Tree[d][n-1], Tree[d][n]])
+
+        n = math.floor(n/2)
+
+    Evidence.append([Tree[-1][0]])
+
+    return Evidence
+
+def Verify(m,Evidence,Top):
+    h = (hashlib.sha256(m.encode())).hexdigest()
+    if h != Evidence[0][0] and h != Evidence[0][1]:
+        return False
+
+    if Evidence[-1][0] != Top:
+        return False
+
+    Depth = len(Evidence)
+    for i in range(0,Depth-1):
+        node = (hashlib.sha256(Evidence[i][0].encode() + Evidence[i][1].encode())).hexdigest()
+        if node != Evidence[i+1][0] and node != Evidence[i+1][1]:
+            return False
+
+    if (hashlib.sha256(Evidence[-2][0].encode() + Evidence[-2][1].encode())).hexdigest() != Evidence[-1][0]:
+        return False
+
+    return True
 ```
-而后的Inclusion/Exclusion proof都是基于Audit Path计算根节点索引值与MerkleRoot得到的结果相比进行判断。    
+ 
 ## 运行结果
 添加十万个结点后进行InclusionProof：  
-<img width="722" alt="image" src="https://github.com/Dianyudengdeng/homework-group-113/assets/93588357/80c29ab5-7c97-42d0-b5cf-2d312e7a22fb">  
-<img width="722" alt="image" src="https://github.com/Dianyudengdeng/homework-group-113/assets/93588357/c26c387b-911d-4215-9d72-4f48a6e59e74">  
-对比可知，由于Merkle Tree的设计，InclusionProof的时间复杂度为O(log n)，所以在结点数量差异较大的情况下，尽管可以直观感受到树构建过程的时间差异，InclusionProof的时间开销并没有较大的差异。
+![evidence](https://github.com/Star-Leeee/homework-group-120/assets/139939885/97480e0c-f599-43e6-be63-159663c983be)
+
