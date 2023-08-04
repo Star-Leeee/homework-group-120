@@ -16,3 +16,6 @@ server端进行的步骤为:
 - 建立连接
 - Gen_Key(P1)
 - Gen_r_s2_s3(d2, Q1, e)
+
+![server](https://github.com/Star-Leeee/homework-group-120/assets/139939885/6c114b95-7882-49f6-bb47-d2f2ea584890)
+![Uploading client.png…]()
