@@ -3,7 +3,7 @@
 ## 实现方式：
 根据RFC6962对于Merkle Tree的设计，实现了Merkle Tree的构建，利用***Evidence***和***Verify***实现Inclusion proof and Exclusion proof for specified element
 
-不同于普遍的Merkle Tree设计从叶子结点开始两两组合生成Merkle Root，RFC6962要求构建从Root开始递归构建二叉树  
+特别的，RFC6962要求构建从Root开始递归构建二叉树  
 <img width="449" alt="RFC" src="https://github.com/Star-Leeee/homework-group-120/assets/139939885/dda1d0ca-d48e-41aa-846e-eb88e8c49b32">
 
 初始化一个二维列表用于存放我们的Merkel tree，计算树的深度和叶子节点的个数，接着计算数据哈希值并写入叶子节点；每两个子节点计算相加后的哈希值并写入父节点列表。 而对于同一层的节点可以重复调用这个function（过程），生成下一层（父节点层）Merkle树的节点；每层向上生成父节点的时候，需要讨论对于节点数为奇数的层的最后一个节点，直接写入下一层（父节点层）；节点数为偶数则正好配对完全，进行递归步骤(3)和(4)的过程，循环步骤(1)计算的树的深度，完成Merkle树的生成过程；
