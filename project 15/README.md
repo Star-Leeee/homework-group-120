@@ -19,3 +19,5 @@ server端进行的步骤为:
 
 ![server](https://github.com/Star-Leeee/homework-group-120/assets/139939885/7ec81e8f-4db8-470a-a6d5-77951c65b51a)
 
+![client](https://github.com/Star-Leeee/homework-group-120/assets/139939885/77df15e2-8168-47bf-a710-223b4bbd1d3c)
+
