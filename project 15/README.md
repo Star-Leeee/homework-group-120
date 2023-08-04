@@ -1,23 +1,10 @@
 # Project15: implement sm2 2P sign with real network communication
 
-![SM2 SIGN](https://github.com/Star-Leeee/homework-group-120/assets/139939885/6701093f-f31b-4f1f-b01f-2c1f85501285)
+实现平台<br>
+|CPU|RAM|IDE|
+|---|---|---|
+|Intel Core i7-8550U|hynix DDR4 2400Mhz 8Gib|Python 3.10|
 
-左边为client端，右边为server端
-
-client端进行补步骤为:
-
-- 建立连接
-- Gen_Key()
-- Gen_Q1_e(Z, M)
-- Sign(d1, k1, r, s2, s3)
-
-server端进行的步骤为:
-
-- 建立连接
-- Gen_Key(P1)
-- Gen_r_s2_s3(d2, Q1, e)
-
-![server](https://github.com/Star-Leeee/homework-group-120/assets/139939885/7ec81e8f-4db8-470a-a6d5-77951c65b51a)
-
-![client](https://github.com/Star-Leeee/homework-group-120/assets/139939885/77df15e2-8168-47bf-a710-223b4bbd1d3c)
+运行方式<br>
+直接运行
 
