@@ -17,5 +17,5 @@ server端进行的步骤为:
 - Gen_Key(P1)
 - Gen_r_s2_s3(d2, Q1, e)
 
-![server](https://github.com/Star-Leeee/homework-group-120/assets/139939885/6c114b95-7882-49f6-bb47-d2f2ea584890)
-![Uploading client.png…]()
+![server](https://github.com/Star-Leeee/homework-group-120/assets/139939885/7ec81e8f-4db8-470a-a6d5-77951c65b51a)
+
