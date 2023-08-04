@@ -6,14 +6,11 @@
 #include<intrin.h>
 #include<string.h>
 #include<omp.h>
-
-
 #define uint_32 unsigned int// 4byte 1word
 #define uint_8 unsigned char// 8bit 1byte
 #define uint_256 unsigned int*
 #define uint_512 unsigned int*
 #define procedure 4096*2048//2^24
-
 
 const uint_32 IV[8] =
 {
@@ -58,7 +55,7 @@ const uint_32 t[64] = {
 0x8a7a879d,0x14f50f3b,0x29ea1e76,0x53d43cec,
 0xa7a879d8,0x4f50f3b1,0x9ea1e762,0x3d43cec5 };
 
-const unsigned int W[68] = { 0x61626380 ,0x00000000,0x00000000,0x00000000 ,0x00000000,0x00000000 ,0x00000000 ,0x00000000,
+const int W[68] = { 0x61626380 ,0x00000000,0x00000000,0x00000000 ,0x00000000,0x00000000 ,0x00000000 ,0x00000000,
 0x00000000 ,0x00000000 ,0x00000000,0x00000000,0x00000000,0x00000000 ,0x00000000 ,0x00000018,
 0x9092e200,0x00000000 ,0x000c0606 ,0x719c70ed,0x00000000,0x8001801f ,0x939f7da9 ,0x00000000,
 0x2c6fa1f9 ,0xadaaef14 ,0x00000000 ,0x0001801e,0x9a965f89,0x49710048 ,0x23ce86a1 ,0xb2d12f1b,
@@ -68,10 +65,7 @@ const unsigned int W[68] = { 0x61626380 ,0x00000000,0x00000000,0x00000000 ,0x000
 0x68378cf5 ,0x97585344 ,0x09008723,0x86faee74,0x2ab908b0 ,0x4a64bc50,0x864e6e08 ,0xf07e6590,
 0x325c8f78 ,0xaccb8011,0xe11db9dd,0xb99c0545 };
 
-//uint_32 FF(uint_32 X, uint_32 Y, uint_32 Z, int j);
-//uint_32 GG(uint_32 X, uint_32 Y, uint_32 Z, int j);
-//uint_32 P0(uint_32 arg);
-//uint_32 P1(uint_32 arg);
+
 void CF(uint_256 V, uint_512 B);
 void sm3_do(uint_8* input, uint_256 output, long long size);
 uint_32 endian_swap(uint_32 arg);

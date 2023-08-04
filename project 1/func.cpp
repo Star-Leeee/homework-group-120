@@ -5,7 +5,6 @@
 #define P0(arg) ((arg) ^ (_rotl(arg, 9)) ^ (_rotl(arg, 17)))
 #define P1(arg) ((arg) ^ (_rotl(arg, 15)) ^ (_rotl(arg, 23)))
 
-
 uint_32 endian_swap(uint_32 arg)
 {
 	return ((arg & 0xff000000) >> 24)
@@ -26,8 +25,8 @@ void CF(uint_256 V, uint_512 B)
 	}	
 	
 	//compression function
-	unsigned int temp[8] = { V[0],V[1],V[2],V[3],V[4],V[5],V[6],V[7] };
-
+	int temp[8] = { V[0],V[1],V[2],V[3],V[4],V[5],V[6],V[7] };
+	
 	enum NUM {
 		V_A, V_B, V_C, V_D, V_E, V_F, V_G, V_H
 	};
@@ -36,6 +35,7 @@ void CF(uint_256 V, uint_512 B)
 	__m256i bbb = _mm256_set_epi32(
 		6, 5, 4, 7,
 		2, 1, 0, 3);
+	//将64论迭代函数分类实现
 	for (int j = 0; j <= 11; j++)
 	{
 		TT2 = ((temp[V_A] << 12) | ((temp[V_A] & 0xFFFFFFFF) >> 20));
@@ -53,7 +53,8 @@ void CF(uint_256 V, uint_512 B)
 		__m256i aaa = _mm256_set_epi32(
 			temp[V_H], temp[V_G], temp[V_F], temp[V_E],
 			temp[V_D], temp[V_C], temp[V_B], temp[V_A]);
-		__m256i ccc = _mm256_permutevar8x32_epi32(aaa, bbb);
+		__m256i ccc = _mm256_permutevar8x32_epi32(aaa, bbb);//利用重排的方式实现消息更新
+		//_mm256_maskstore_epi32((temp), zee, ccc);
 		_mm256_storeu_epi32((temp), ccc);
 	}
 
