@@ -13,3 +13,6 @@
 攻击结果👇<br>
 ![攻击结果](https://github.com/Star-Leeee/homework-group-120/assets/139939885/abde4525-8fc8-49bb-afeb-6911402aafd4)
 在可接受的时间与内存开销内实现了最高 ***32bit* collision of SM3**
+
+![birthday](https://github.com/Star-Leeee/homework-group-120/assets/139939885/364ab624-d8a1-4a48-8345-0ce655c7b498)
+取消控制多线程同步的锁，直接进行***40bit collision***，在可接受的时间与内存开销内也实现了。
