@@ -1,6 +1,9 @@
 # Project9: AES / SM4 software implementation
 
-实现了SM4
+实现平台<br>
+|CPU|RAM|IDE|
+|---|---|---|
+|Intel Core i7-8550U|hynix DDR4 2400Mhz 8Gib|VS 2019|
 
-![SM4](https://github.com/Star-Leeee/homework-group-120/assets/139939885/4b33a1ba-e9fc-49d7-9b77-10fea43fae27)<br>
-[SM4标准](https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=7803DE42D3BC5E80B0C3E5D8E873D56A)
+运行方式<br>
+创建VS project，再添加源码运行
